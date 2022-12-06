@@ -1,17 +1,21 @@
-import {TimerEvent, TimerEventType} from "./TimerEvent";
-import {DateUtil} from "alm";
+import { TimerEvent, TimerEventType } from './TimerEvent';
+import { DateUtil } from 'alm_coreutil';
 
 export class Timer extends EventTarget {
-
 	// --------------------------------------------------
 	//
 	// CONSTRUCTOR
 	//
 	// --------------------------------------------------
 
-	constructor(interval:number = 1000, repeatCount:number = 0) {
+	/**
+	 * 時間間隔と繰り返し回数を指定してタイマーオブジェクトを生成します。
+	 * @param delay - タイマーのカウント間隔（ミリ秒）です。
+	 * @param repeatCount - タイマーの繰り返し回数です。0以下を指定すると無限に繰り返します。
+	 */
+	constructor(delay: number = 1000, repeatCount: number = 0) {
 		super();
-		this.interval = interval;
+		this.delay = delay;
 		this.repeatCount = repeatCount;
 		this.isRunning = false;
 		this.tId = -1;
@@ -19,75 +23,85 @@ export class Timer extends EventTarget {
 		DateUtil.now();
 	}
 
-
-
-
-
 	// --------------------------------------------------
 	//
 	// METHOD
 	//
 	// --------------------------------------------------
 
-	public start():void {
+	/**
+	 * タイマーを実行します。
+	 * タイマーが停止中の場合は停止時の残りの時間から再開します。
+	 */
+	public start(): void {
 		if (this.isRunning) return;
 		this.isRunning = true;
 		this.tStartTime = DateUtil.now();
-		this.startInterval(this.tRestTime !== -1 ? this.tRestTime : this.interval);
+		this.startDelay(this.tRestTime !== -1 ? this.tRestTime : this.delay);
 	}
 
-	public stop():void {
+	/**
+	 * 起動中のタイマーを一時停止します。
+	 */
+	public stop(): void {
 		if (!this.isRunning) return;
 		this.isRunning = false;
 		this.tRestTime = DateUtil.now() - this.tStartTime;
-		this.stopInterval();
+		this.stopDelay();
 	}
 
-	public reset():void {
+	/**
+	 * タイマーの残り時間および既に繰り返している回数をリセットします。
+	 * 起動中のタイマーは停止されます。
+	 */
+	public reset(): void {
 		this.stop();
 		this.elapsedCount = 0;
 		this.tRestTime = -1;
 	}
 
-	public restart():void {
+	/**
+	 * タイマーをリセットした上で開始します。
+	 */
+	public restart(): void {
 		this.reset();
 		this.start();
 	}
 
-
-
-
-
-	private startInterval(interval:number):void {
-		this.stopInterval();
-		this.tInterval = interval;
-		this.tId = window.setInterval(this.timerHandler, this.tInterval);
+	private startDelay(delay: number): void {
+		this.stopDelay();
+		this.tDelay = delay;
+		this.tId = window.setInterval(this.timerHandler, this.tDelay);
 	}
 
-	private stopInterval():void {
+	private stopDelay(): void {
 		if (this.tId !== -1) {
 			clearInterval(this.tId);
 			this.tId = -1;
 		}
 	}
 
-	private dispatch(eventType:TimerEventType):void {
-		this.dispatchEvent(new TimerEvent(eventType, { detail: {
-				elapsedCount: this.elapsedCount,
-				repeatCount: this.repeatCount,
-				restCount: this.getRestCount(),
-			}}));
+	private dispatch(eventType: TimerEventType): void {
+		this.dispatchEvent(
+			new TimerEvent(eventType, {
+				detail: {
+					elapsedCount: this.elapsedCount,
+					repeatCount: this.repeatCount,
+					restCount: this.getRestCount(),
+				},
+			})
+		);
 	}
 
-	private timerHandler = ():void => {
+	private timerHandler = (): void => {
 		this.tStartTime = DateUtil.now();
 		++this.elapsedCount;
-		let isCompleted:boolean = false;
+		let isCompleted: boolean = false;
 		if (this.repeatCount > 0 && this.elapsedCount >= this.repeatCount) {
 			isCompleted = true;
 			this.stop();
-		} else if (this.tInterval !== this.interval) {
-			this.startInterval(this.interval);
+		} else if (this.tDelay !== this.delay) {
+			this.startDelay(this.delay);
 		}
 		this.dispatch(TimerEventType.tick);
 		if (isCompleted) {
@@ -95,49 +109,78 @@ export class Timer extends EventTarget {
 		}
 	};
 
-
-
-
-
-	public getIsRunning():boolean {
+	/**
+	 * タイマーが実行中かどうかを取得します。
+	 * @return - タイマーが実行中の場合はtrue、それ以外の場合はfalseを返します。
+	 */
+	public getIsRunning(): boolean {
 		return this.isRunning;
 	}
 
-	public getInterval():number {
-		return this.interval;
+	/**
+	 * タイマーのカウント間隔（ミリ秒）を取得します。
+	 * @return - タイマーのカウント間隔（ミリ秒）です。
+	 */
+	public getDelay(): number {
+		return this.delay;
 	}
 
-	public setInterval(interval:number):void {
-		this.interval = interval;
+	/**
+	 * タイマーのカウント間隔（ミリ秒）を設定します。
+	 * @param delay - タイマーのカウント間隔（ミリ秒）です。
+	 */
+	public setDelay(delay: number): void {
+		this.delay = delay;
 	}
 
-	public getElapsedTime():number {
+	/**
+	 * タイマーの経過時間（ミリ秒）を取得します。
+	 * タイマーがカウントをおこなうごとに0にリセットされます。
+	 * @return - タイマーの経過時間（ミリ秒）です。
+	 */
+	public getElapsedTime(): number {
 		return DateUtil.now() - this.tStartTime;
 	}
 
-	public getRestTime():number {
-		return this.interval - this.getElapsedTime();
+	/**
+	 * タイマーが次にカウントをおこなうまでの残り時間（ミリ秒）を取得します。
+	 * @return - タイマーの残り時間（ミリ秒）です。
+	 */
+	public getRestTime(): number {
+		return this.delay - this.getElapsedTime();
 	}
 
-	public getElapsedCount():number {
+	/**
+	 * タイマーの現在のカウント回数を取得します。
+	 * @return - 現在のカウント回数です。
+	 */
+	public getElapsedCount(): number {
 		return this.elapsedCount;
 	}
 
-	public getRepeatCount():number {
+	/**
+	 * タイマーの設定されたカウント回数を取得します。
+	 * @return - 設定されたカウント回数です。
+	 */
+	public getRepeatCount(): number {
 		return this.repeatCount;
 	}
 
-	public setRepeatCount(count:number):void {
+	/**
+	 * タイマーの設定されたカウント回数を設定します。
+	 * @param count - 設定されたカウント回数です。
+	 */
+	public setRepeatCount(count: number): void {
 		this.repeatCount = count;
 	}
 
-	public getRestCount():number {
+	/**
+	 * タイマーの残りのカウント回数を設定します。
+	 * @return - 残りのカウント回数です。
+	 */
+	public getRestCount(): number {
 		return this.repeatCount - this.elapsedCount;
 	}
-
-
-
-
 
 	// --------------------------------------------------
 	//
@@ -145,12 +188,12 @@ export class Timer extends EventTarget {
 	//
 	// --------------------------------------------------
 
-	private isRunning:boolean;
-	private interval:number;
-	private elapsedCount:number;
-	private repeatCount:number;
-	private tStartTime:number;
-	private tRestTime:number;
-	private tInterval:number;
-	private tId:number;
+	private isRunning: boolean;
+	private delay: number;
+	private elapsedCount: number;
+	private repeatCount: number;
+	private tStartTime: number;
+	private tRestTime: number;
+	private tDelay: number;
+	private tId: number;
 }

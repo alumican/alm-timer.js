@@ -1,6 +1,6 @@
 {
   "name": "alm-timer.js",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "",
   "author": "alumican",
   "license": "MIT",
@@ -14,8 +14,8 @@
     "url": "https://github.com/alumican/alm-timer.js"
   },
   "config": {
-    "namespace": "alm",
-    "externalDependencies": ["alm"],
+    "namespace": "alm_timer",
+    "externalDependencies": ["alm_coreutil"],
     "port_example": 3000,
     "port_doc": 3001
   },
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.2",
     "@rollup/plugin-typescript": "^8.3.0",
-    "alm-coreutil.js": "*",
+    "alm-coreutil.js": "^1.0.0",
     "http-server": "^14.0.0",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",

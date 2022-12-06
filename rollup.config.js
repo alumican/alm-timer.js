@@ -31,11 +31,15 @@ function getOutput() {
 		file: production ? pkg.main.replace('.js', '.min.js') : pkg.main,
 		format: 'umd',
 		name: pkg.config.namespace,
-		globals: {},
 		extend: true,
 		sourcemap: true,
 	};
-	output.globals[pkg.config.namespace] = pkg.config.namespace;
+	if (pkg.config.externalDependencies) {
+		output.globals = {};
+		pkg.config.externalDependencies.map((value) => {
+			output.globals[value] = value;
+		});
+	}
 	if (!document) {
 		output['banner'] = `/*! ${pkg.name} ${pkg.version} (c) ${(new Date()).getFullYear()} ${pkg.author}, licensed under the ${pkg.license}, more information ${pkg.repository.url} */`;
 	}
