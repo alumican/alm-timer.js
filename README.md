@@ -34,4 +34,4 @@ timer.start();
 
 ## 📗 ドキュメント
 APIリファレンス  
-https://alumican.github.io/alm-timer.js/
+https://alumican.github.io/alm-timer.js/doc/
