@@ -1,6 +1,10 @@
 import { TimerEvent, TimerEventType } from './TimerEvent';
 import { DateUtil } from 'alm_coreutil';
 
+/**
+ * 指定した時間だけ遅延させて処理をおこなうためのクラスです。
+ * 遅延時間と繰り返し回数を指定することができます。
+ */
 export class Timer extends EventTarget {
 	// --------------------------------------------------
 	//
@@ -9,8 +13,8 @@ export class Timer extends EventTarget {
 	// --------------------------------------------------
 
 	/**
-	 * 時間間隔と繰り返し回数を指定してタイマーオブジェクトを生成します。
-	 * @param delay - タイマーのカウント間隔（ミリ秒）です。
+	 * 遅延と繰り返し回数を指定してタイマーオブジェクトを生成します。
+	 * @param delay - タイマーの遅延（ミリ秒）です。
 	 * @param repeatCount - タイマーの繰り返し回数です。0以下を指定すると無限に繰り返します。
 	 */
 	constructor(delay: number = 1000, repeatCount: number = 0) {
@@ -20,7 +24,6 @@ export class Timer extends EventTarget {
 		this.isRunning = false;
 		this.tId = -1;
 		this.reset();
-		DateUtil.now();
 	}
 
 	// --------------------------------------------------

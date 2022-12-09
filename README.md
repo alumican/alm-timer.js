@@ -23,7 +23,7 @@ timer.addEventListener('tick', (event) => {
     console.log(`${event.detail.elapsedCount}回目`);
 });
 
-// 繰り返し終わったら呼ばれるイベントハンドラ
+// 指定回数繰り返したら呼ばれるイベントハンドラ
 timer.addEventListener('complete', (event) => {
     console.log('完了');
 });
@@ -32,6 +32,32 @@ timer.addEventListener('complete', (event) => {
 timer.start();
 ```
 
-## 📗 ドキュメント
-APIリファレンス  
-https://alumican.github.io/alm-timer.js/doc/
+### 主な機能
+```js
+// delay: ミリ秒（デフォルト 1000）
+// repeatCount: 繰り返し回数（デフォルト 0 = 無制限）
+timer = new alm_timer.Timer(delay, repeatCount);
+```
+
+```js
+// タイマーを実行または再開します
+timer.start();
+```
+
+```js
+// タイマーを一時停止します
+timer.stop();
+```
+
+```js
+// タイマーを実行前の状態に戻して停止します
+timer.reset();
+```
+
+```js
+// タイマーを実行前の状態に戻して開始します
+timer.restart();
+```
+
+### ドキュメント
+[APIリファレンス](https://alumican.github.io/alm-timer.js/doc/)
