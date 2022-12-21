@@ -19,7 +19,7 @@
 const timer = new alm_timer.Timer(5000, 10);
 
 // 繰り返すごとに呼ばれるイベントハンドラ
-timer.addEventListener('tick', (event) => {
+timer.addEventListener('count', (event) => {
     console.log(`${event.detail.elapsedCount}回目`);
 });
 

@@ -1,4 +1,4 @@
-/*! alm-timer.js 1.0.7 (c) 2022 alumican, licensed under the MIT, more information https://github.com/alumican/alm-timer.js */
+/*! alm-timer.js 1.0.8 (c) 2022 alumican, licensed under the MIT, more information https://github.com/alumican/alm-timer.js */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('alm_coreutil')) :
     typeof define === 'function' && define.amd ? define(['exports', 'alm_coreutil'], factory) :
