@@ -2,11 +2,23 @@ export declare enum TimerEventType {
     /**
      * タイマーがカウントしたときに送出されるイベントタイプです。
      */
-    tick = "tick",
+    count = "count",
     /**
      * タイマーが設定回数までカウントしたときに送出されるイベントタイプです。
      */
-    complete = "complete"
+    complete = "complete",
+    /**
+     * タイマーを開始したときに送出されるイベントタイプです。
+     */
+    start = "start",
+    /**
+     * タイマーを停止したときに送出されるイベントタイプです。
+     */
+    stop = "stop",
+    /**
+     * タイマーをリセットしたときに送出されるイベントタイプです。
+     */
+    reset = "reset"
 }
 export interface TimerEventDetail {
     /**

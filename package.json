@@ -1,6 +1,6 @@
 {
   "name": "alm-timer.js",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "",
   "author": "alumican",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.1.2",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-typescript": "^8.3.0",
     "alm-coreutil.js": "^1.0.0",
     "http-server": "^14.0.0",

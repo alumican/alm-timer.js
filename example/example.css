@@ -1,3 +1,101 @@
+:root {
+	--ui-text-color: #212529;
+	--ui-button-color: #0d6efd;
+
+	--ui-button-color-text: #fff;
+	--ui-button-color-hover: #0b5ed7;
+	--ui-button-color-active: #2d71d7;
+}
+
+/* ----- base ----- */
+
 body {
 	font-family: sans-serif;
+	font-size: 16px;
+	color: var(--ui-text-color);
+}
+
+main {
+	padding: 1rem;
+}
+
+/* ----- title ----- */
+
+h1 {
+	font-size: 1.5rem;
+}
+
+/* ----- log ----- */
+
+.log {
+	font-size: 1rem;
+	padding: 0.25rem 0.5rem;
+	border: solid 1px #ccc;
+	border-radius: 0.25rem;
+	min-height: 3rem;
+}
+
+/* ----- readonly ----- */
+.readonlyContainer {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: -0.5rem;
+	margin-left: -0.5rem;
+}
+
+.readonlyContainer .readonly {
+	margin-top: 0.5rem;
+	margin-left: 0.5rem;
+}
+
+.readonly {
+	display: inline-block;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	background-color: rgba(0, 0, 0, 0.07);
+	min-height: 1rem;
+}
+
+.readonly .label {
+}
+
+.readonly .value {
+	color: #ff40b5;
+}
+
+/* ----- button ----- */
+
+.buttonContainer {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: -0.5rem;
+	margin-left: -0.5rem;
+}
+
+.buttonContainer button {
+	margin-top: 0.5rem;
+	margin-left: 0.5rem;
+}
+
+button {
+	display: block;
+	padding: 0.8rem 1.6rem;
+	border-radius: 0.5rem;
+	color: #fff;
+	background-color: var(--ui-button-color);
+}
+
+button:hover {
+	background-color: var(--ui-button-color-hover);
+	transition-duration: 0.5s;
+}
+
+button:active {
+	background-color: var(--ui-button-color-active);
+	transition-duration: 0.5s;
+}
+
+/* ----- space ----- */
+.space {
+	height: 1rem;
 }

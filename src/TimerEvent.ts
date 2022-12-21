@@ -2,12 +2,27 @@ export enum TimerEventType {
 	/**
 	 * タイマーがカウントしたときに送出されるイベントタイプです。
 	 */
-	tick = 'tick',
+	count = 'count',
 
 	/**
 	 * タイマーが設定回数までカウントしたときに送出されるイベントタイプです。
 	 */
 	complete = 'complete',
+
+	/**
+	 * タイマーを開始したときに送出されるイベントタイプです。
+	 */
+	start = 'start',
+
+	/**
+	 * タイマーを停止したときに送出されるイベントタイプです。
+	 */
+	stop = 'stop',
+
+	/**
+	 * タイマーをリセットしたときに送出されるイベントタイプです。
+	 */
+	reset = 'reset',
 }
 
 export interface TimerEventDetail {
@@ -33,10 +48,7 @@ export class TimerEvent extends CustomEvent<TimerEventDetail> {
 	 * @param type - 送出されたイベントオブジェクトのイベントタイプです。
 	 * @param options - イベントオブジェクトに付随するプロパティです。
 	 */
-	constructor(
-		type: TimerEventType,
-		options: CustomEventInit<TimerEventDetail>
-	) {
+	constructor(type: TimerEventType, options: CustomEventInit<TimerEventDetail>) {
 		super(type, options);
 	}
 }

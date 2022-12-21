@@ -22,6 +22,7 @@ export class Timer extends EventTarget {
 		this.delay = delay;
 		this.repeatCount = repeatCount;
 		this.isRunning = false;
+		this.isComplete = false;
 		this.tId = -1;
 		this.reset();
 	}
@@ -37,10 +38,12 @@ export class Timer extends EventTarget {
 	 * タイマーが停止中の場合は停止時の残りの時間から再開します。
 	 */
 	public start(): void {
+		if (this.isComplete) return;
 		if (this.isRunning) return;
 		this.isRunning = true;
-		this.tStartTime = DateUtil.now();
+		this.tStartTime = this.tRestTime !== -1 ? DateUtil.now() - this.tElapsedTime : DateUtil.now();
 		this.startDelay(this.tRestTime !== -1 ? this.tRestTime : this.delay);
+		this.dispatch(TimerEventType.start);
 	}
 
 	/**
@@ -48,8 +51,15 @@ export class Timer extends EventTarget {
 	 */
 	public stop(): void {
 		if (!this.isRunning) return;
+		this.stopInternal();
+		this.dispatch(TimerEventType.stop);
+	}
+
+	private stopInternal(): void {
+		if (!this.isRunning) return;
 		this.isRunning = false;
-		this.tRestTime = DateUtil.now() - this.tStartTime;
+		this.tElapsedTime = DateUtil.now() - this.tStartTime;
+		this.tRestTime = this.delay - this.tElapsedTime;
 		this.stopDelay();
 	}
 
@@ -58,9 +68,13 @@ export class Timer extends EventTarget {
 	 * 起動中のタイマーは停止されます。
 	 */
 	public reset(): void {
-		this.stop();
+		this.stopInternal();
+		this.isComplete = false;
 		this.elapsedCount = 0;
+		this.tStartTime = 0;
+		this.tElapsedTime = 0;
 		this.tRestTime = -1;
+		this.dispatch(TimerEventType.reset);
 	}
 
 	/**
@@ -71,6 +85,9 @@ export class Timer extends EventTarget {
 		this.start();
 	}
 
+	/**
+	 * setInterval制御
+	 */
 	private startDelay(delay: number): void {
 		this.stopDelay();
 		this.tDelay = delay;
@@ -84,6 +101,30 @@ export class Timer extends EventTarget {
 		}
 	}
 
+	private timerHandler = (): void => {
+		++this.elapsedCount;
+		let isComplete: boolean = false;
+		if (this.repeatCount > 0 && this.elapsedCount >= this.repeatCount) {
+			isComplete = true;
+			this.isRunning = false;
+			this.tElapsedTime = this.tDelay;
+			this.stopDelay();
+		} else {
+			this.tStartTime = DateUtil.now();
+			if (this.tDelay !== this.delay) {
+				this.startDelay(this.delay);
+			}
+		}
+		this.dispatch(TimerEventType.count);
+		if (isComplete) {
+			this.isComplete = true;
+			this.dispatch(TimerEventType.complete);
+		}
+	};
+
+	/**
+	 * イベント管理
+	 */
 	private dispatch(eventType: TimerEventType): void {
 		this.dispatchEvent(
 			new TimerEvent(eventType, {
@@ -92,25 +133,9 @@ export class Timer extends EventTarget {
 					repeatCount: this.repeatCount,
 					restCount: this.getRestCount(),
 				},
-			})
+			}),
 		);
 	}
-
-	private timerHandler = (): void => {
-		this.tStartTime = DateUtil.now();
-		++this.elapsedCount;
-		let isCompleted: boolean = false;
-		if (this.repeatCount > 0 && this.elapsedCount >= this.repeatCount) {
-			isCompleted = true;
-			this.stop();
-		} else if (this.tDelay !== this.delay) {
-			this.startDelay(this.delay);
-		}
-		this.dispatch(TimerEventType.tick);
-		if (isCompleted) {
-			this.dispatch(TimerEventType.complete);
-		}
-	};
 
 	/**
 	 * タイマーが実行中かどうかを取得します。
@@ -118,6 +143,14 @@ export class Timer extends EventTarget {
 	 */
 	public getIsRunning(): boolean {
 		return this.isRunning;
+	}
+
+	/**
+	 * タイマーが完了済みかどうかを取得します。
+	 * @return - タイマーが完了済みの場合はtrue、それ以外の場合はfalseを返します。
+	 */
+	public getIsComplete(): boolean {
+		return this.isComplete;
 	}
 
 	/**
@@ -142,7 +175,7 @@ export class Timer extends EventTarget {
 	 * @return - タイマーの経過時間（ミリ秒）です。
 	 */
 	public getElapsedTime(): number {
-		return DateUtil.now() - this.tStartTime;
+		return this.isRunning ? DateUtil.now() - this.tStartTime : this.tElapsedTime;
 	}
 
 	/**
@@ -192,10 +225,12 @@ export class Timer extends EventTarget {
 	// --------------------------------------------------
 
 	private isRunning: boolean;
+	private isComplete: boolean;
 	private delay: number;
 	private elapsedCount: number;
 	private repeatCount: number;
 	private tStartTime: number;
+	private tElapsedTime: number;
 	private tRestTime: number;
 	private tDelay: number;
 	private tId: number;

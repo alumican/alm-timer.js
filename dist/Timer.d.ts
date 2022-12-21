@@ -1,7 +1,11 @@
+/**
+ * 指定した時間だけ遅延させて処理をおこなうためのクラスです。
+ * 遅延時間と繰り返し回数を指定することができます。
+ */
 export declare class Timer extends EventTarget {
     /**
-     * 時間間隔と繰り返し回数を指定してタイマーオブジェクトを生成します。
-     * @param delay - タイマーのカウント間隔（ミリ秒）です。
+     * 遅延と繰り返し回数を指定してタイマーオブジェクトを生成します。
+     * @param delay - タイマーの遅延（ミリ秒）です。
      * @param repeatCount - タイマーの繰り返し回数です。0以下を指定すると無限に繰り返します。
      */
     constructor(delay?: number, repeatCount?: number);
@@ -14,6 +18,7 @@ export declare class Timer extends EventTarget {
      * 起動中のタイマーを一時停止します。
      */
     stop(): void;
+    private stopInternal;
     /**
      * タイマーの残り時間および既に繰り返している回数をリセットします。
      * 起動中のタイマーは停止されます。
@@ -23,15 +28,26 @@ export declare class Timer extends EventTarget {
      * タイマーをリセットした上で開始します。
      */
     restart(): void;
+    /**
+     * setInterval制御
+     */
     private startDelay;
     private stopDelay;
-    private dispatch;
     private timerHandler;
+    /**
+     * イベント管理
+     */
+    private dispatch;
     /**
      * タイマーが実行中かどうかを取得します。
      * @return - タイマーが実行中の場合はtrue、それ以外の場合はfalseを返します。
      */
     getIsRunning(): boolean;
+    /**
+     * タイマーが完了済みかどうかを取得します。
+     * @return - タイマーが完了済みの場合はtrue、それ以外の場合はfalseを返します。
+     */
+    getIsComplete(): boolean;
     /**
      * タイマーのカウント間隔（ミリ秒）を取得します。
      * @return - タイマーのカウント間隔（ミリ秒）です。
@@ -74,10 +90,12 @@ export declare class Timer extends EventTarget {
      */
     getRestCount(): number;
     private isRunning;
+    private isComplete;
     private delay;
     private elapsedCount;
     private repeatCount;
     private tStartTime;
+    private tElapsedTime;
     private tRestTime;
     private tDelay;
     private tId;

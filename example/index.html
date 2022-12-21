@@ -6,12 +6,101 @@
 	<title>Example</title>
 	<link rel="stylesheet" href="lib/destyle.css">
 	<link rel="stylesheet" href="example.css">
-	<script src="https://cdn.jsdelivr.net/npm/alm-coreutil.js/dist/index.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alm-coreutil.js@latest/dist/index.min.js"></script>
 	<script src="../dist/index.js"></script>
+	<style>
+	</style>
 </head>
 <body>
-<h1>Example</h1>
+<main>
+	<h1>Timer Example</h1>
+	<div class="space"></div>
+	<div class="buttonContainer">
+		<button id="startButton">START</button>
+		<button id="stopButton">STOP</button>
+		<button id="resetButton">RESET</button>
+		<button id="restartButton">RESTART</button>
+	</div>
+	<div class="space"></div>
+	<div class="readonlyContainer">
+		<div class="readonly" id="isRunning"></div>
+		<div class="readonly" id="isComplete"></div>
+		<div class="readonly" id="delay"></div>
+		<div class="readonly" id="elapsedTime"></div>
+		<div class="readonly" id="restTime"></div>
+		<div class="readonly" id="elapsedCount"></div>
+		<div class="readonly" id="repeatCount"></div>
+		<div class="readonly" id="restCount"></div>
+	</div>
+	<div class="space"></div>
+	<div class="log" id="log"></div>
+</main>
 <script>
+	const timer = new alm_timer.Timer(1000, 10);
+
+	const logField = document.getElementById('log');
+	timer.addEventListener('count', (event) => {
+		logField.innerHTML += 'count : ' + event.detail.elapsedCount + ' / ' + event.detail.repeatCount + '<br>';
+	});
+	timer.addEventListener('complete', (event) => {
+		logField.innerHTML += 'complete<br>';
+	});
+	timer.addEventListener('start', (event) => {
+		logField.innerHTML += 'start<br>';
+	});
+	timer.addEventListener('stop', (event) => {
+		logField.innerHTML += 'stop<br>';
+	});
+	timer.addEventListener('reset', (event) => {
+		logField.innerHTML += 'reset<br>';
+	});
+
+	document.getElementById('startButton').addEventListener('click', (event) => {
+		timer.start();
+	});
+	document.getElementById('stopButton').addEventListener('click', (event) => {
+		timer.stop();
+	});
+	document.getElementById('resetButton').addEventListener('click', (event) => {
+		timer.reset();
+	});
+	document.getElementById('restartButton').addEventListener('click', (event) => {
+		timer.restart();
+	});
+
+	const items = [];
+	function bindAsReadonly(id, func) {
+		const element = document.getElementById(id);
+		items.push({
+			element: element,
+			label: element.attributes['data-label'] || id,
+			func: func,
+		});
+	}
+	function observe() {
+		const n = items.length;
+		for (let i = 0; i < n; ++i) {
+			const item = items[i];
+			if (item.func) {
+				item.element.innerHTML = '<span class="label">' + item.label + ' : </span><span class="value">' + item.func() + '</span>';
+			}
+		}
+	}
+
+	bindAsReadonly('isRunning', () => { return timer.getIsRunning(); });
+	bindAsReadonly('isComplete', () => { return timer.getIsComplete(); });
+	bindAsReadonly('delay', () => { return timer.getDelay() + 'ms'; });
+	bindAsReadonly('elapsedTime', () => { return timer.getElapsedTime() + 'ms'; });
+	bindAsReadonly('restTime', () => { return timer.getRestTime() + 'ms'; });
+	bindAsReadonly('elapsedCount', () => { return timer.getElapsedCount(); });
+	bindAsReadonly('restCount', () => { return timer.getRestCount(); });
+	bindAsReadonly('repeatCount', () => { return timer.getRepeatCount(); });
+
+	setInterval(() => {
+		observe();
+	}, 1000 / 60);
+	observe();
+
 </script>
 </body>
 </html>
